@@ -1,6 +1,6 @@
 {
   "name": "jsisolate-confine-runtime",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Confine runtime: Runs javascript in a custom isolate.",
   "main": "index.js",
   "scripts": {
@@ -11,8 +11,9 @@
     "url": "git+https://github.com/confine-sandbox/jsisolate-confine-runtime.git"
   },
   "dependencies": {
-    "abstract-confine-runtime": "^0.0.1",
-    "module-sandbox": "git+ssh://git@github.com:pfrazee/module-sandbox.git#main"
+    "abstract-confine-runtime": "^0.1.0",
+    "module-sandbox": "git+ssh://git@github.com:pfrazee/module-sandbox.git#main",
+    "msgpackr": "^1.5.1"
   },
   "keywords": [],
   "author": "Paul Frazee <pfrazee@gmail.com>",
