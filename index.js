@@ -31,11 +31,22 @@ module.exports = class JsIsolateConfineRuntime extends AbstractConfineRuntime {
         notify: (ctx, body) => this.ipc.notify(0, pack(body))
       }
     })
+    this.isolate.on('closed', () => {
+      this.emit('closed', this.isolate.exitCode || 0)
+    })
     await this.isolate.open()
   }
 
   async run () {
-    await this.isolate.run()
+    try {
+      await this.isolate.run()
+    } catch (e) {
+      if (e.message === 'Isolate was disposed during execution') {
+        // caused by process.exit(), ignore
+        return
+      }
+      throw e
+    }
   }
 
   async close () {

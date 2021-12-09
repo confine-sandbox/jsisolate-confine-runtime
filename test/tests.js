@@ -45,3 +45,14 @@ ava('Requests', async t => {
   t.deepEqual(ipc.messages[1].body, {isNotify: true})
   t.deepEqual(res, {hello: 'request'})
 })
+
+ava('Exit code', async t => {
+  const ipc = fakeIpc()
+  const path = join(__dirname, 'programs', 'exitcode.js')
+  const runtime = new JsIsolateConfineRuntime({source: get(path), path, ipc})
+  let exitCode = undefined
+  runtime.on('closed', _exitCode => { exitCode = _exitCode })
+  await runtime.init()
+  await runtime.run()
+  t.is(exitCode, 1)
+})
