@@ -1,9 +1,16 @@
-const {unpack} = require('msgpackr')
+const {readFileSync} = require('fs')
+const {join} = require('path')
+const JsIsolateConfineRuntime = require('../../index.js')
 
-module.exports.fakeIpc = () => {
-  const messages = []
-  const ipc = {messages}
-  ipc.request = (cid, body) => { messages.push({type: 'request', cid, body: unpack(body)}) }
-  ipc.notify = (cid, body) => { messages.push({type: 'notify', cid, body: unpack(body)}) }
-  return ipc
+const get = path => readFileSync(path)
+
+exports.makeRuntime = (programPath, opts = {}) => {
+  const path = join(__dirname, '..', 'programs', programPath)
+  opts = Object.assign(opts, {
+    source: get(path),
+    path,
+    env: opts.env || 'vanilla',
+    module: opts.module || 'cjs'
+  })
+  return new JsIsolateConfineRuntime(opts)
 }
