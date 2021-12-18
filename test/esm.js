@@ -2,9 +2,10 @@ const ava = require('ava')
 const { makeRuntime } = require('./util/util.js')
 const { join } = require('path')
 
-ava('Requires', async t => {
+ava('Imports', async t => {
   const logs = []
-  const runtime = makeRuntime(join('cjs', 'requires', 'index.js'), {
+  const runtime = makeRuntime(join('esm', 'imports', 'index.js'), {
+    module: 'esm',
     globals: {
       console: {
         log: (...args) => logs.push(args)
@@ -19,11 +20,32 @@ ava('Requires', async t => {
   t.deepEqual(logs[1], ['mult result:', 2])
 })
 
+ava('Disable imports', async t => {
+  const logs = []
+  const runtime = makeRuntime(join('esm', 'imports', 'index.js'), {
+    module: 'esm',
+    globals: {
+      console: {
+        log: (...args) => logs.push(args)
+      }
+    },
+    esm: {
+      disableImports: true
+    }
+  })
+  await runtime.init()
+  await t.throwsAsync(() => runtime.run())
+  await runtime.close()
+})
+
 ava('Exports', async t => {
-  const runtime = makeRuntime(join('cjs', 'exports', 'index.js'))
+  const runtime = makeRuntime(join('esm', 'exports', 'index.js'), {
+    module: 'esm'
+  })
   await runtime.init()
   await runtime.run()
-  t.deepEqual(sortAPI(JSON.parse(JSON.stringify(runtime.describeAPI()))), {
+  // TODO: not yet supported
+  /*t.deepEqual(sortAPI(JSON.parse(JSON.stringify(runtime.describeAPI()))), {
     type: 'api',
     children: [
       {type: 'method', name: 'add'},
@@ -35,7 +57,7 @@ ava('Exports', async t => {
         {type: 'method', name: 'greet'},
       ]}
     ]
-  })
+  })*/
   t.is(await runtime.handleAPICall('add', [1, 2]), 3)
   t.is(await runtime.handleAPICall('mult', [3, 4]), 12)
   t.is(await runtime.handleAPICall('mult', [3, 4, 2]), 24)
@@ -45,19 +67,6 @@ ava('Exports', async t => {
   await runtime.close()
 })
 
-ava('Require overrides', async t => {
-  const runtime = makeRuntime(join('cjs', 'require-overrides', 'index.js'), {
-    cjs: {
-      requires: {
-        'other-module': join(__dirname, 'programs', 'cjs', 'require-overrides', 'other.js')
-      }
-    }
-  })
-  await runtime.init()
-  await runtime.run()
-  t.is(await runtime.handleAPICall('hello'), 'hello world')
-  await runtime.close()
-})
 
 function sortAPI (v) {
   if (v.children) {

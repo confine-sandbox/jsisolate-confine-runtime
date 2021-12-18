@@ -15,13 +15,18 @@ const runtime = new JsIsolateConfineRuntime({
   source: ArrayBuffer, // script source
   path: string, // the path to the script
   env: 'vanilla' | 'nodejs',
-  module: 'cjs',
+  module: 'cjs' | 'esm',
   globals: {
     // ... any globals you want to define
   },
-  requires: {
-    // ... any require overrides you want to define
-    // a map of 'module-name' -> 'path'
+  cjs: {
+    requires: {
+      // ... any require overrides you want to define
+      // a map of 'module-name' -> 'path'
+    }
+  },
+  esm: {
+    disableImports: boolean // disallow imports?
   }
 })
 ```
