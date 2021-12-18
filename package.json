@@ -1,6 +1,6 @@
 {
   "name": "jsisolate-confine-runtime",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Confine runtime: Runs javascript in a custom isolate.",
   "main": "index.js",
   "scripts": {
